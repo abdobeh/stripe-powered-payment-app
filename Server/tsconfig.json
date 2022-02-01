@@ -4,7 +4,7 @@
       "noImplicitReturns": true,
       "noUnusedLocals": true,
       "noImplicitAny": false,
-      "outDir": "lib",
+      "outDir": "Server/lib",
       "sourceMap": true,
       "strict": true,
       "target": "es2017",
@@ -14,7 +14,7 @@
     },
     "compileOnSave": true,
     "include": [
-      "src"
+      "Server/src"
     ]
   }
   
