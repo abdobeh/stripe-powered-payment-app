@@ -1,4 +1,7 @@
+import {auth} from './firebase';
+
 const API = process.env.WEBAPP_URL;
+
 
 /**
  * A helper function to fetch data from your API.
@@ -6,11 +9,16 @@ const API = process.env.WEBAPP_URL;
 export async function fetchFromAPI(endpointURL, opts) {
   const { method, body } = { method: 'POST', body: null, ...opts };
 
+  const user = auth.currentUser;
+  const token = user && (await user.getIdToken());
+
+
   const res = await fetch(`${API}/${endpointURL}`, {
     method,
     ...(body && { body: JSON.stringify(body) }),
     headers: {
       'Content-Type': 'application/json',
+      Authorisation: `Bearer ${token}`,
     },
   });
 
