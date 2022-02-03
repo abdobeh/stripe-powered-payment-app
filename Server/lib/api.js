@@ -10,7 +10,8 @@ const checkout_1 = require("./checkout");
 const payments_1 = require("./payments");
 const webhooks_1 = require("./webhooks");
 const firebase_1 = require("./firebase");
-const customer_1 = require("./customer");
+const customers_1 = require("./customers");
+const billing_1 = require("./billing");
 exports.app = express_1.default();
 exports.app.use(express_1.default.json());
 exports.app.use(cors_1.default({ origin: true }));
@@ -72,7 +73,22 @@ exports.app.post('/wallet', runAsync(async (req, res) => {
 }));
 exports.app.get('/wallet', runAsync(async (req, res) => {
     const user = validateUser(req);
-    const wallet = await customer_1.ListPaymentMethods(user.uid);
+    const wallet = await customers_1.ListPaymentMethods(user.uid);
     res.send(wallet.data);
+}));
+exports.app.post('/subscriptions/', runAsync(async (req, res) => {
+    const user = validateUser(req);
+    const { plan, payment_method } = req.body;
+    const subscription = await billing_1.createSubscription(user.uid, plan, payment_method);
+    res.send(subscription);
+}));
+exports.app.get('/subscriptions/', runAsync(async (req, res) => {
+    const user = validateUser(req);
+    const subscriptions = await billing_1.listSubscriptions(user.uid);
+    res.send(subscriptions.data);
+}));
+exports.app.patch('/subscriptions/:id', runAsync(async (req, res) => {
+    const user = validateUser(req);
+    res.send(await billing_1.cancelSubscription(user.uid, req.params.id));
 }));
 //# sourceMappingURL=api.js.map

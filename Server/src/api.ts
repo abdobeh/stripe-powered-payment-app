@@ -4,7 +4,8 @@ import { createStripeCheckoutSession} from './checkout';
 import { createPaymentIntent } from './payments';
 import { handleStripeWebhook } from './webhooks';
 import {auth} from './firebase';
-import { ListPaymentMethods } from './customer';
+import { ListPaymentMethods } from './customers';
+import { createSubscription, cancelSubscription, listSubscriptions } from './billing';
 
 export const app = express();
 
@@ -115,3 +116,31 @@ app.get(
     })
 );
 
+app.post(
+    '/subscriptions/',
+    runAsync(async (req: Request, res: Response) => {
+        const user = validateUser(req);
+        const { plan, payment_method } = req.body;
+        const subscription = await createSubscription(user.uid, plan, payment_method);
+        res.send(subscription);
+    })
+);
+
+app.get(
+    '/subscriptions/',
+    runAsync(async (req: Request, res: Response) => {
+      const user = validateUser(req);
+  
+      const subscriptions = await listSubscriptions(user.uid);
+  
+      res.send(subscriptions.data);
+    })
+);
+
+app.patch(
+    '/subscriptions/:id',
+    runAsync(async (req: Request, res: Response) => {
+      const user = validateUser(req);
+      res.send(await cancelSubscription(user.uid, req.params.id));
+    })
+  );
